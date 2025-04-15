@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -7,6 +7,14 @@ import {
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
 import ReactConfetti from 'react-confetti';
 import { Artist } from '@/lib/types';
 import { useWindowSize } from '@/lib/hooks';
@@ -17,6 +25,8 @@ interface ArtistSearchProps {
 
 export function ArtistSearch({ artists }: ArtistSearchProps) {
 	const [searchTerm, setSearchTerm] = useState('');
+	const [suggestions, setSuggestions] = useState<Artist[]>([]);
+	const [showSuggestions, setShowSuggestions] = useState(false);
 	const [searchResult, setSearchResult] = useState<{
 		found: boolean;
 		artist?: Artist;
@@ -24,18 +34,58 @@ export function ArtistSearch({ artists }: ArtistSearchProps) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [showConfetti, setShowConfetti] = useState(false);
 	const { width, height } = useWindowSize();
+	const commandRef = useRef<HTMLDivElement>(null);
 
-	const handleSearch = () => {
-		if (!searchTerm.trim()) return;
+	// Update suggestions as user types
+	useEffect(() => {
+		if (!searchTerm.trim()) {
+			setSuggestions([]);
+			return;
+		}
 
 		const term = searchTerm.trim().toLowerCase();
-		const foundArtist = artists.find((artist) =>
-			artist.name.toLowerCase().includes(term)
-		);
+		const matchingArtists = artists
+			.filter((artist) => artist.name.toLowerCase().includes(term))
+			.slice(0, 5); // Limit to 5 suggestions
+
+		setSuggestions(matchingArtists);
+		setShowSuggestions(matchingArtists.length > 0);
+	}, [searchTerm, artists]);
+
+	// Close suggestions dropdown when clicking outside
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (
+				commandRef.current &&
+				!commandRef.current.contains(event.target as Node)
+			) {
+				setShowSuggestions(false);
+			}
+		}
+
+		document.addEventListener('mousedown', handleClickOutside);
+		return () => {
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
+	}, []);
+
+	const handleSearch = (artist?: Artist) => {
+		// If artist is provided directly (from suggestion), use it
+		// Otherwise search for it using the searchTerm
+		const termToSearch = artist ? artist.name : searchTerm.trim();
+
+		if (!termToSearch) return;
+
+		const foundArtist =
+			artist ||
+			artists.find((a) =>
+				a.name.toLowerCase().includes(termToSearch.toLowerCase())
+			);
 
 		const found = !!foundArtist;
 		setSearchResult({ found, artist: foundArtist });
 		setShowDialog(true);
+		setShowSuggestions(false);
 
 		if (!found) {
 			setShowConfetti(true);
@@ -53,14 +103,65 @@ export function ArtistSearch({ artists }: ArtistSearchProps) {
 				</p>
 			</div>
 
-			<div className="flex gap-2">
-				<Input
-					placeholder="Enter artist name..."
-					value={searchTerm}
-					onChange={(e) => setSearchTerm(e.target.value)}
-					onKeyUp={(e) => e.key === 'Enter' && handleSearch()}
-				/>
-				<Button onClick={handleSearch}>Search</Button>
+			<div className="flex flex-col gap-2 relative">
+				<div className="flex gap-2">
+					<Input
+						placeholder="Enter artist name..."
+						value={searchTerm}
+						onChange={(e) => {
+							setSearchTerm(e.target.value);
+							if (e.target.value.trim()) {
+								setShowSuggestions(true);
+							}
+						}}
+						onKeyUp={(e) => {
+							if (e.key === 'Enter') {
+								handleSearch();
+								setShowSuggestions(false);
+							}
+						}}
+						autoComplete="off"
+					/>
+					<Button
+						onClick={() => {
+							handleSearch();
+							setShowSuggestions(false);
+						}}
+					>
+						Search
+					</Button>
+				</div>
+
+				{/* Autocomplete suggestions */}
+				{showSuggestions && (
+					<div
+						ref={commandRef}
+						className="absolute top-full left-0 right-0 z-10 mt-1 border rounded-md bg-background shadow-md"
+					>
+						<Command>
+							<CommandList>
+								<CommandEmpty>No results found</CommandEmpty>
+								<CommandGroup heading="Suggestions">
+									{suggestions.map((artist) => (
+										<CommandItem
+											key={artist.name}
+											onSelect={() => {
+												setSearchTerm(artist.name);
+												handleSearch(artist);
+											}}
+											className="cursor-pointer"
+										>
+											{artist.name}
+											<span className="ml-2 text-sm text-muted-foreground">
+												({artist.songs.length} songs)
+											</span>
+										</CommandItem>
+									))}
+								</CommandGroup>
+							</CommandList>
+						</Command>
+					</div>
+				)}
 			</div>
 
 			{showConfetti && (
@@ -76,7 +177,8 @@ export function ArtistSearch({ artists }: ArtistSearchProps) {
 					{searchResult.found ? (
 						<div className="py-4">
 							<p className="font-semibold text-amber-500">
-								{`Warning! The artist "${searchResult.artist?.name}" is already in the list.`}
+								Warning! The artist &quot;{searchResult.artist?.name}
+								&quot; is already in the list.
 							</p>
 							<p className="mt-2">Songs by this artist:</p>
 							<ul className="list-disc pl-6 mt-2">
@@ -88,7 +190,8 @@ export function ArtistSearch({ artists }: ArtistSearchProps) {
 					) : (
 						<div className="py-4">
 							<p className="font-semibold text-emerald-500">
-								{`Congratulations! "${searchTerm}" is not in the list yet.`}
+								Congratulations! &quot;{searchTerm}&quot; is not in
+								the list yet.
 							</p>
 							<p className="mt-2">
 								You can add this artist to the Lost Boys Music League!
