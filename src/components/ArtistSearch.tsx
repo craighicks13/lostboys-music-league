@@ -1,23 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandItem,
+	CommandList,
+} from '@/components/ui/command';
 import {
 	Dialog,
 	DialogContent,
 	DialogHeader,
 	DialogTitle,
 } from '@/components/ui/dialog';
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from '@/components/ui/command';
-import ReactConfetti from 'react-confetti';
-import { Artist } from '@/lib/types';
+import { Input } from '@/components/ui/input';
 import { useWindowSize } from '@/lib/hooks';
+import { Artist } from '@/lib/types';
+import { useEffect, useRef, useState } from 'react';
+import ReactConfetti from 'react-confetti';
 
 interface ArtistSearchProps {
 	artists: Artist[];
