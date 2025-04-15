@@ -1,6 +1,22 @@
 import Papa from 'papaparse';
 import { Artist, Song } from './types';
 
+// Define interface for CSV row data
+interface CSVRow {
+	'#': string;
+	Song: string;
+	Artist: string;
+	Popularity: string;
+	BPM: string;
+	Genres: string;
+	Album: string;
+	'Album Date': string;
+	Time: string;
+	'Spotify Track Id': string;
+	ISRC: string;
+	[key: string]: string; // For any other columns
+}
+
 export async function fetchAndParseCSV(): Promise<{
 	artists: Artist[];
 	allSongs: Song[];
@@ -9,12 +25,12 @@ export async function fetchAndParseCSV(): Promise<{
 		const response = await fetch('/Total Lost Boys Music League.csv');
 		const csvText = await response.text();
 
-		const { data } = Papa.parse(csvText, {
+		const { data } = Papa.parse<CSVRow>(csvText, {
 			header: true,
 			skipEmptyLines: true,
 		});
 
-		const songs = data.map((row: any, index) => ({
+		const songs = data.map((row, index) => ({
 			id: row.ISRC || `song-${index}`,
 			number: parseInt(row['#']) || index + 1,
 			song: row.Song || '',

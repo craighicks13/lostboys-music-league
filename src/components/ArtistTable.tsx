@@ -1,5 +1,9 @@
-import { useState } from 'react';
-import { Artist, Song } from '@/lib/types';
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import {
 	Table,
 	TableBody,
@@ -8,12 +12,8 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import {
-	Card,
-	CardContent,
-	CardHeader,
-	CardTitle,
-} from '@/components/ui/card';
+import { Artist } from '@/lib/types';
+import { useState } from 'react';
 
 interface ArtistTableProps {
 	artists: Artist[];

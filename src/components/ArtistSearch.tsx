@@ -76,8 +76,7 @@ export function ArtistSearch({ artists }: ArtistSearchProps) {
 					{searchResult.found ? (
 						<div className="py-4">
 							<p className="font-semibold text-amber-500">
-								Warning! The artist "{searchResult.artist?.name}" is
-								already in the list.
+								{`Warning! The artist "${searchResult.artist?.name}" is already in the list.`}
 							</p>
 							<p className="mt-2">Songs by this artist:</p>
 							<ul className="list-disc pl-6 mt-2">
@@ -89,8 +88,7 @@ export function ArtistSearch({ artists }: ArtistSearchProps) {
 					) : (
 						<div className="py-4">
 							<p className="font-semibold text-emerald-500">
-								Congratulations! "{searchTerm}" is not in the list
-								yet.
+								{`Congratulations! "${searchTerm}" is not in the list yet.`}
 							</p>
 							<p className="mt-2">
 								You can add this artist to the Lost Boys Music League!
