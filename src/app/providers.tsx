@@ -10,6 +10,7 @@ import { httpBatchLink } from '@trpc/client';
 import { createTRPCReact } from '@trpc/react-query';
 import superjson from 'superjson';
 import type { AppRouter } from '../server/api/root';
+import { ThemeProvider } from '../components/ThemeProvider';
 
 // Create tRPC client
 export const trpc = createTRPCReact<AppRouter>({});
@@ -32,11 +33,17 @@ export function Providers({
 	);
 
 	return (
-		<trpc.Provider client={trpcClient} queryClient={queryClient}>
-			<QueryClientProvider client={queryClient}>
-				{children}
-				<ReactQueryDevtools initialIsOpen={false} />
-			</QueryClientProvider>
-		</trpc.Provider>
+		<ThemeProvider
+			attribute="class"
+			defaultTheme="system"
+			enableSystem
+		>
+			<trpc.Provider client={trpcClient} queryClient={queryClient}>
+				<QueryClientProvider client={queryClient}>
+					{children}
+					<ReactQueryDevtools initialIsOpen={false} />
+				</QueryClientProvider>
+			</trpc.Provider>
+		</ThemeProvider>
 	);
 }

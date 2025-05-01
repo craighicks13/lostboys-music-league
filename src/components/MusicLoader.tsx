@@ -47,12 +47,12 @@ export function MusicLoader() {
 	return (
 		<div className="flex flex-col items-center justify-center gap-4 py-12">
 			<div className="relative flex items-center justify-center">
-				<div className="animate-spin h-14 w-14 rounded-full border-2 border-stone-300 border-t-stone-800"></div>
+				<div className="animate-spin h-14 w-14 rounded-full border-2 border-stone-300 dark:border-stone-700 border-t-stone-800 dark:border-t-stone-300"></div>
 				<div className="absolute">
-					<CurrentIcon className="h-6 w-6 text-stone-800" />
+					<CurrentIcon className="h-6 w-6 text-stone-800 dark:text-stone-300" />
 				</div>
 			</div>
-			<p className="text-lg font-medium text-stone-700 italic text-center">
+			<p className="text-lg font-medium text-stone-700 dark:text-stone-300 italic text-center">
 				{musicQuotes[quoteIndex]}
 			</p>
 		</div>
