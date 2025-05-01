@@ -1,29 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { fetchAndParseCSV } from '@/lib/csvParser';
-import { Artist } from '@/lib/types';
+import SearchToggle from '@/components/SearchToggle';
 import { ArtistTable } from '@/components/ArtistTable';
-import { ArtistSearch } from '@/components/ArtistSearch';
+import { usePlaylistData } from '@/lib/hooks';
+import { trpc } from './providers';
 
 export default function Home() {
-	const [artists, setArtists] = useState<Artist[]>([]);
-	const [loading, setLoading] = useState(true);
+	// Use trpc query with React Query
+	const { data: playlistData, error: queryError } =
+		trpc.spotify.getPlaylist.useQuery();
 
-	useEffect(() => {
-		async function loadData() {
-			try {
-				const { artists } = await fetchAndParseCSV();
-				setArtists(artists);
-			} catch (error) {
-				console.error('Failed to load data:', error);
-			} finally {
-				setLoading(false);
-			}
-		}
-
-		loadData();
-	}, []);
+	// Use our custom hook to process data and handle errors
+	const { artists, allSongs, error, isLoading } = usePlaylistData(
+		playlistData,
+		queryError
+	);
 
 	return (
 		<main className="flex min-h-screen flex-col items-center p-8 gap-8">
@@ -32,10 +23,16 @@ export default function Home() {
 					Lost Boys Music League
 				</h1>
 
-				<div className="grid grid-cols-1 gap-8 md:gap-12">
-					<ArtistSearch artists={artists} />
+				{error && (
+					<div className="bg-amber-100 border-l-4 border-amber-500 text-amber-700 p-4 mb-6">
+						<p>{error}</p>
+					</div>
+				)}
 
-					{loading ? (
+				<div className="grid grid-cols-1 gap-8 md:gap-12">
+					<SearchToggle artists={artists} allSongs={allSongs} />
+
+					{isLoading ? (
 						<div className="flex justify-center py-12">
 							<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-stone-900"></div>
 						</div>

@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/table';
 import { Artist } from '@/lib/types';
 import { useState } from 'react';
+import React from 'react';
 
 interface ArtistTableProps {
 	artists: Artist[];
@@ -47,17 +48,18 @@ export function ArtistTable({ artists }: ArtistTableProps) {
 					</TableHeader>
 					<TableBody>
 						{artists.map((artist) => (
-							<TableRow
-								key={artist.name}
-								className="cursor-pointer hover:bg-muted/50"
-								onClick={() => toggleArtistExpand(artist.name)}
-							>
-								<TableCell className="font-medium">
-									{artist.name}
-								</TableCell>
-								<TableCell className="text-right">
-									{artist.songs.length}
-								</TableCell>
+							<React.Fragment key={artist.name}>
+								<TableRow
+									className="cursor-pointer hover:bg-muted/50"
+									onClick={() => toggleArtistExpand(artist.name)}
+								>
+									<TableCell className="font-medium">
+										{artist.name}
+									</TableCell>
+									<TableCell className="text-right">
+										{artist.songs.length}
+									</TableCell>
+								</TableRow>
 								{expandedArtist === artist.name && (
 									<TableRow className="bg-muted/20">
 										<TableCell colSpan={2} className="p-0">
@@ -82,7 +84,7 @@ export function ArtistTable({ artists }: ArtistTableProps) {
 										</TableCell>
 									</TableRow>
 								)}
-							</TableRow>
+							</React.Fragment>
 						))}
 					</TableBody>
 				</Table>
