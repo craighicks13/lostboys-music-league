@@ -2,13 +2,17 @@
 
 import SearchToggle from '@/components/SearchToggle';
 import { ArtistTable } from '@/components/ArtistTable';
+import { MusicLoader } from '@/components/MusicLoader';
 import { usePlaylistData } from '@/lib/hooks';
 import { trpc } from './providers';
 
 export default function Home() {
 	// Use trpc query with React Query
 	const { data: playlistData, error: queryError } =
-		trpc.spotify.getPlaylist.useQuery();
+		trpc.spotify.getPlaylist.useQuery(undefined, {
+			staleTime: 5 * 60 * 1000, // 5 minutes
+			gcTime: 5 * 60 * 1000, // 5 minutes
+		});
 
 	// Use our custom hook to process data and handle errors
 	const { artists, allSongs, error, isLoading } = usePlaylistData(
@@ -33,9 +37,7 @@ export default function Home() {
 					<SearchToggle artists={artists} allSongs={allSongs} />
 
 					{isLoading ? (
-						<div className="flex justify-center py-12">
-							<div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-stone-900"></div>
-						</div>
+						<MusicLoader />
 					) : (
 						<ArtistTable artists={artists} />
 					)}
