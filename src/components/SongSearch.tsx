@@ -49,8 +49,19 @@ export default function SongSearch({ allSongs }: SongSearchProps) {
 			.filter((song) => song.song.toLowerCase().includes(term))
 			.slice(0, 5); // Limit to 5 suggestions
 
-		setSuggestions(matchingSongs);
-		setShowSuggestions(matchingSongs.length > 0);
+		// Filter out duplicates by ID
+		const uniqueSongs: Song[] = [];
+		const songIds = new Set<string>();
+
+		matchingSongs.forEach((song) => {
+			if (!songIds.has(song.id)) {
+				songIds.add(song.id);
+				uniqueSongs.push(song);
+			}
+		});
+
+		setSuggestions(uniqueSongs);
+		setShowSuggestions(uniqueSongs.length > 0);
 	}, [searchTerm, allSongs]);
 
 	// Close suggestions dropdown when clicking outside
@@ -143,9 +154,9 @@ export default function SongSearch({ allSongs }: SongSearchProps) {
 							<CommandList>
 								<CommandEmpty>No results found</CommandEmpty>
 								<CommandGroup heading="Suggestions">
-									{suggestions.map((song) => (
+									{suggestions.map((song, index) => (
 										<CommandItem
-											key={song.id}
+											key={`${song.id}-${index}`}
 											onSelect={() => {
 												setSearchTerm(song.song);
 												handleSearch(song);
