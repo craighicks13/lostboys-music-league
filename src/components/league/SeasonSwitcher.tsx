@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Plus, Calendar, Trophy } from "lucide-react";
 import { trpc } from "@/app/providers";
 import { Button } from "@/components/ui/button";
@@ -11,13 +12,10 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 interface SeasonSwitcherProps {
   leagueId: string;
   userRole: string;
-  selectedSeasonId?: string | null;
-  onSeasonChange?: (seasonId: string | null) => void;
   onCreateSeason?: () => void;
 }
 
@@ -69,8 +67,6 @@ function statusBadgeClassName(status: "upcoming" | "active" | "completed") {
 export function SeasonSwitcher({
   leagueId,
   userRole,
-  selectedSeasonId,
-  onSeasonChange,
   onCreateSeason,
 }: SeasonSwitcherProps) {
   const { data: seasons, isLoading } = trpc.season.list.useQuery({ leagueId });
@@ -127,18 +123,13 @@ export function SeasonSwitcher({
         ) : (
           <div className="space-y-2">
             {seasons.map((season) => {
-              const isSelected = selectedSeasonId === season.id;
               const dateRange = formatDateRange(season.startDate, season.endDate);
 
               return (
-                <button
+                <Link
                   key={season.id}
-                  type="button"
-                  onClick={() => onSeasonChange?.(isSelected ? null : season.id)}
-                  className={cn(
-                    "w-full flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left transition-colors hover:bg-accent",
-                    isSelected && "ring-2 ring-ring bg-accent"
-                  )}
+                  href={`/leagues/${leagueId}/seasons/${season.id}`}
+                  className="w-full flex items-center justify-between gap-3 rounded-lg border px-4 py-3 text-left transition-colors hover:bg-accent"
                 >
                   <div className="flex flex-col gap-1 min-w-0">
                     <span className="text-sm font-medium truncate">
@@ -164,7 +155,7 @@ export function SeasonSwitcher({
                       {season.status}
                     </Badge>
                   </div>
-                </button>
+                </Link>
               );
             })}
           </div>

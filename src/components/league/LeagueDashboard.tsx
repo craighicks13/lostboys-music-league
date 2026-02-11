@@ -22,7 +22,6 @@ import { CollapsibleSection } from "@/components/CollapsibleSection";
 import { MembersList } from "./MembersList";
 import { InviteManager } from "./InviteManager";
 import { SeasonSwitcher } from "./SeasonSwitcher";
-import { SeasonLeaderboard } from "./SeasonLeaderboard";
 import { CreateSeasonForm } from "./CreateSeasonForm";
 import { CreateRoundForm } from "./CreateRoundForm";
 
@@ -39,8 +38,6 @@ export function LeagueDashboard() {
   const [inviteOpen, setInviteOpen] = useState(false);
   const [createSeasonOpen, setCreateSeasonOpen] = useState(false);
   const [createRoundOpen, setCreateRoundOpen] = useState(false);
-  const [selectedSeasonId, setSelectedSeasonId] = useState<string | null>(null);
-
   const { data: league, isLoading, error } = trpc.league.getById.useQuery(
     { id },
     { enabled: !!id }
@@ -111,7 +108,7 @@ export function LeagueDashboard() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-1">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold">{league.name}</h1>
+            <h1 className="text-2xl font-bold font-[family-name:var(--font-heading)]">{league.name}</h1>
             <Badge variant={league.visibility === "public" ? "secondary" : "outline"}>
               {league.visibility}
             </Badge>
@@ -142,31 +139,31 @@ export function LeagueDashboard() {
       <div className="flex flex-wrap items-center gap-2">
         <Button asChild variant="outline" size="sm">
           <Link href={`/leagues/${id}/search`}>
-            <Search className="size-4 mr-1.5" />
+            <Search className="size-3.5 mr-1.5" />
             Search
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link href={`/leagues/${id}/analytics`}>
-            <BarChart3 className="size-4 mr-1.5" />
+            <BarChart3 className="size-3.5 mr-1.5" />
             Analytics
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link href={`/leagues/${id}/leaderboards`}>
-            <Trophy className="size-4 mr-1.5" />
+            <Trophy className="size-3.5 mr-1.5" />
             Leaderboard
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link href={`/leagues/${id}/compare`}>
-            <ArrowLeftRight className="size-4 mr-1.5" />
+            <ArrowLeftRight className="size-3.5 mr-1.5" />
             Compare
           </Link>
         </Button>
         <Button asChild variant="outline" size="sm">
           <Link href={`/leagues/${id}/chat`}>
-            <MessageCircle className="size-4 mr-1.5" />
+            <MessageCircle className="size-3.5 mr-1.5" />
             Chat
           </Link>
         </Button>
@@ -177,7 +174,7 @@ export function LeagueDashboard() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <ExternalLink className="size-4 mr-1.5" />
+              <ExternalLink className="size-3.5 mr-1.5" />
               WhatsApp Group
             </a>
           </Button>
@@ -188,7 +185,7 @@ export function LeagueDashboard() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
+        <Card className="border-t-2 border-t-primary/20 hover:border-t-primary/50 transition-colors">
           <CardHeader className="pb-2">
             <CardDescription>Members</CardDescription>
             <CardTitle className="text-2xl flex items-center gap-2">
@@ -197,7 +194,7 @@ export function LeagueDashboard() {
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card>
+        <Card className="border-t-2 border-t-primary/20 hover:border-t-primary/50 transition-colors">
           <CardHeader className="pb-2">
             <CardDescription>Active Season</CardDescription>
             <CardTitle className="text-2xl flex items-center gap-2">
@@ -210,7 +207,7 @@ export function LeagueDashboard() {
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card>
+        <Card className="border-t-2 border-t-primary/20 hover:border-t-primary/50 transition-colors">
           <CardHeader className="pb-2">
             <CardDescription>Current Round</CardDescription>
             <CardTitle className="text-2xl flex items-center gap-2">
@@ -235,25 +232,17 @@ export function LeagueDashboard() {
         <MembersList leagueId={id} userRole={league.userRole ?? "member"} />
       </CollapsibleSection>
 
-      {/* Seasons & Leaderboard */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="space-y-3">
-          <SeasonSwitcher
-            leagueId={id}
-            userRole={league.userRole ?? "member"}
-            selectedSeasonId={selectedSeasonId}
-            onSeasonChange={setSelectedSeasonId}
-            onCreateSeason={() => setCreateSeasonOpen(true)}
-          />
+      {/* Seasons */}
+      <div className="space-y-3">
+        <SeasonSwitcher
+          leagueId={id}
+          userRole={league.userRole ?? "member"}
+          onCreateSeason={() => setCreateSeasonOpen(true)}
+        />
+        <div className="flex gap-3">
           <Button asChild variant="link" size="sm" className="px-0">
             <Link href={`/leagues/${id}/seasons`}>View All Seasons</Link>
           </Button>
-        </div>
-        <div className="space-y-3">
-          <SeasonLeaderboard
-            leagueId={id}
-            seasonId={selectedSeasonId}
-          />
           <Button asChild variant="link" size="sm" className="px-0">
             <Link href={`/leagues/${id}/leaderboards`}>View Full Leaderboard</Link>
           </Button>
@@ -263,7 +252,7 @@ export function LeagueDashboard() {
       {/* Rounds */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Rounds</h2>
+          <h2 className="text-lg font-semibold font-[family-name:var(--font-heading)]">Rounds</h2>
           {isOwnerOrAdmin && (
             <div className="flex items-center gap-2">
               <Button size="sm" onClick={() => setCreateRoundOpen(true)} disabled={!hasSeasons}>
@@ -280,7 +269,7 @@ export function LeagueDashboard() {
           <div className="space-y-2">
             {recentRounds.slice(0, 5).map((round) => (
               <Link key={round.id} href={`/leagues/${id}/rounds/${round.id}`} className="block">
-              <Card className="transition-colors hover:bg-accent/50 cursor-pointer">
+              <Card className="border-l-2 border-l-primary/20 hover:border-l-primary/50 transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 hover:bg-accent/50 cursor-pointer">
                 <CardHeader className="py-3">
                   <div className="flex items-center justify-between">
                     <span className="font-medium">
@@ -336,7 +325,7 @@ export function LeagueDashboard() {
 
       <CreateRoundForm
         leagueId={id}
-        seasonId={selectedSeasonId ?? undefined}
+        seasonId={activeSeason?.id}
         open={createRoundOpen}
         onOpenChange={setCreateRoundOpen}
       />

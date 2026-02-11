@@ -174,9 +174,15 @@ export function RoundDetail({ roundId }: RoundDetailProps) {
     <div className="container mx-auto max-w-4xl py-8 px-4 space-y-6">
       {/* Back link */}
       <Button asChild variant="ghost" size="sm">
-        <Link href={`/leagues/${round.leagueId}`}>
+        <Link
+          href={
+            round.seasonId
+              ? `/leagues/${round.leagueId}/seasons/${round.seasonId}`
+              : `/leagues/${round.leagueId}`
+          }
+        >
           <ArrowLeft className="size-4 mr-1.5" />
-          Back to League
+          {round.seasonId ? "Back to Season" : "Back to League"}
         </Link>
       </Button>
 

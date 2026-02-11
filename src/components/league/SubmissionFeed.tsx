@@ -121,7 +121,7 @@ export function SubmissionFeed({
   return (
     <AudioPlayerProvider>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold font-[family-name:var(--font-heading)]">
           Submissions ({allSubmissions.length})
         </h2>
         <Button
@@ -135,7 +135,7 @@ export function SubmissionFeed({
         </Button>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {displaySubmissions.map((sub) => {
+        {displaySubmissions.map((sub, index) => {
           const isCurrentUser = sub.userId === currentUserId;
           const isAnonymous = sub.userName === null;
           const track: TrackMetadata = {
@@ -156,11 +156,12 @@ export function SubmissionFeed({
           return (
             <Card
               key={sub.id}
-              className={
+              className={`border-l-2 border-l-primary/30 opacity-0 animate-slide-up-fade transition-all duration-200 hover:shadow-md hover:-translate-y-0.5${
                 isCurrentUser
-                  ? "border-primary/40 bg-primary/5"
-                  : undefined
-              }
+                  ? " border-primary/40 bg-primary/5"
+                  : ""
+              }`}
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
               <CardContent className="space-y-3 pt-4">
                 <div className="flex items-center gap-2">

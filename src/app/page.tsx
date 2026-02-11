@@ -9,7 +9,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Music, Users, Trophy, Sparkles } from "lucide-react";
+import { Users, Music, Trophy, Sparkles } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Music League - Social Music Discovery",
@@ -29,12 +29,16 @@ export default async function Home() {
   return (
     <main className="flex-1">
       {/* Hero */}
-      <section className="py-20 px-4 text-center">
+      <section className="py-20 px-4 text-center bg-gradient-to-br from-primary/5 via-background to-accent-highlight/5">
         <div className="container max-w-3xl mx-auto space-y-6">
-          <div className="flex justify-center">
-            <Music className="size-12 text-primary" />
+          <div className="flex items-end justify-center gap-1 h-12">
+            <span className="w-1.5 rounded-full bg-primary animate-equalizer" />
+            <span className="w-1.5 rounded-full bg-primary animate-equalizer-delay" />
+            <span className="w-1.5 rounded-full bg-primary animate-equalizer-delay-2" />
+            <span className="w-1.5 rounded-full bg-primary animate-equalizer" />
+            <span className="w-1.5 rounded-full bg-primary animate-equalizer-delay" />
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
+          <h1 className="text-5xl sm:text-6xl font-bold font-[family-name:var(--font-heading)] tracking-tight gradient-text">
             Lost Boys Music League
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -43,11 +47,19 @@ export default async function Home() {
           </p>
           <div className="pt-4">
             {session?.user ? (
-              <Button size="lg" asChild>
+              <Button
+                size="lg"
+                asChild
+                className="gradient-primary text-white border-0 hover:opacity-90 glow-primary"
+              >
                 <Link href="/leagues">Go to My Leagues</Link>
               </Button>
             ) : (
-              <Button size="lg" asChild>
+              <Button
+                size="lg"
+                asChild
+                className="gradient-primary text-white border-0 hover:opacity-90 glow-primary"
+              >
                 <Link href="/auth/signin">Get Started</Link>
               </Button>
             )}
@@ -58,14 +70,16 @@ export default async function Home() {
       {/* Features */}
       <section className="py-16 px-4 bg-muted/40">
         <div className="container max-w-5xl mx-auto space-y-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center font-[family-name:var(--font-heading)]">
             Why you will love it
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            <Card className="text-center">
+            <Card className="text-center border-l-4 border-l-transparent hover:border-l-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <CardHeader>
                 <div className="flex justify-center pb-2">
-                  <Users className="size-8 text-primary" />
+                  <div className="gradient-primary rounded-xl p-3 text-white">
+                    <Users className="size-8" />
+                  </div>
                 </div>
                 <CardTitle>Create Leagues</CardTitle>
                 <CardDescription>
@@ -75,10 +89,12 @@ export default async function Home() {
               </CardHeader>
             </Card>
 
-            <Card className="text-center">
+            <Card className="text-center border-l-4 border-l-transparent hover:border-l-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <CardHeader>
                 <div className="flex justify-center pb-2">
-                  <Music className="size-8 text-primary" />
+                  <div className="gradient-primary rounded-xl p-3 text-white">
+                    <Music className="size-8" />
+                  </div>
                 </div>
                 <CardTitle>Themed Rounds</CardTitle>
                 <CardDescription>
@@ -88,10 +104,12 @@ export default async function Home() {
               </CardHeader>
             </Card>
 
-            <Card className="text-center">
+            <Card className="text-center border-l-4 border-l-transparent hover:border-l-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <CardHeader>
                 <div className="flex justify-center pb-2">
-                  <Trophy className="size-8 text-primary" />
+                  <div className="gradient-primary rounded-xl p-3 text-white">
+                    <Trophy className="size-8" />
+                  </div>
                 </div>
                 <CardTitle>Vote and Rank</CardTitle>
                 <CardDescription>
@@ -101,10 +119,12 @@ export default async function Home() {
               </CardHeader>
             </Card>
 
-            <Card className="text-center">
+            <Card className="text-center border-l-4 border-l-transparent hover:border-l-primary transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
               <CardHeader>
                 <div className="flex justify-center pb-2">
-                  <Sparkles className="size-8 text-primary" />
+                  <div className="gradient-primary rounded-xl p-3 text-white">
+                    <Sparkles className="size-8" />
+                  </div>
                 </div>
                 <CardTitle>AI-Powered Themes</CardTitle>
                 <CardDescription>
@@ -120,7 +140,7 @@ export default async function Home() {
       {/* How it works */}
       <section className="py-16 px-4">
         <div className="container max-w-3xl mx-auto space-y-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-center font-[family-name:var(--font-heading)]">
             How it works
           </h2>
           <ol className="space-y-8">
@@ -149,9 +169,12 @@ export default async function Home() {
                 description:
                   "Scores carry across rounds and seasons. See who has the best taste in music.",
               },
-            ].map((item) => (
-              <li key={item.step} className="flex gap-4 items-start">
-                <span className="flex-none flex items-center justify-center size-10 rounded-full bg-primary text-primary-foreground font-bold text-lg">
+            ].map((item, index) => (
+              <li key={item.step} className="relative flex gap-4 items-start">
+                {index < 3 && (
+                  <div className="absolute left-5 top-12 bottom-0 w-px bg-border" />
+                )}
+                <span className="relative z-10 flex-none flex items-center justify-center size-10 rounded-full gradient-primary text-white font-bold text-lg shadow-md">
                   {item.step}
                 </span>
                 <div>
@@ -165,18 +188,28 @@ export default async function Home() {
       </section>
 
       {/* Footer CTA */}
-      <section className="py-16 px-4 bg-muted/40">
+      <section className="py-16 px-4 bg-gradient-to-r from-primary/10 via-accent-highlight/5 to-primary/10">
         <div className="container max-w-3xl mx-auto text-center space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-bold">Ready to play?</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold font-[family-name:var(--font-heading)]">
+            Ready to play?
+          </h2>
           <p className="text-muted-foreground">
             Join your friends and start discovering music together.
           </p>
           {session?.user ? (
-            <Button size="lg" asChild>
+            <Button
+              size="lg"
+              asChild
+              className="gradient-primary text-white border-0 hover:opacity-90 glow-primary"
+            >
               <Link href="/leagues">Go to My Leagues</Link>
             </Button>
           ) : (
-            <Button size="lg" asChild>
+            <Button
+              size="lg"
+              asChild
+              className="gradient-primary text-white border-0 hover:opacity-90 glow-primary"
+            >
               <Link href="/auth/signin">Get Started</Link>
             </Button>
           )}

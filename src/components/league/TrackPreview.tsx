@@ -72,15 +72,17 @@ export function TrackPreview({ track }: { track: TrackMetadata }) {
       <CardContent className="space-y-2">
         <div className="flex items-center gap-4">
           {track.artworkUrl ? (
-            <Image
-              src={track.artworkUrl}
-              alt={`${track.trackName} artwork`}
-              width={64}
-              height={64}
-              className="h-16 w-16 rounded object-cover"
-            />
+            <div className={isPlaying ? "animate-pulse-glow rounded-lg" : ""}>
+              <Image
+                src={track.artworkUrl}
+                alt={`${track.trackName} artwork`}
+                width={80}
+                height={80}
+                className="h-20 w-20 rounded object-cover transition-transform hover:scale-105"
+              />
+            </div>
           ) : (
-            <div className="bg-muted flex h-16 w-16 items-center justify-center rounded">
+            <div className={`bg-muted flex h-20 w-20 items-center justify-center rounded transition-transform hover:scale-105 ${isPlaying ? "animate-pulse-glow rounded-lg" : ""}`}>
               <Music className="text-muted-foreground h-8 w-8" />
             </div>
           )}
@@ -101,22 +103,31 @@ export function TrackPreview({ track }: { track: TrackMetadata }) {
             </div>
           </div>
 
-          {track.previewUrl ? (
-            <Button
-              variant={isPlaying ? "default" : "outline"}
-              size="icon"
-              onClick={togglePlayback}
-              aria-label={isPlaying ? "Pause preview" : "Play preview"}
-            >
-              {isPlaying ? (
-                <Pause className="h-4 w-4" />
-              ) : (
-                <Play className="h-4 w-4" />
-              )}
-            </Button>
-          ) : (
-            <span className="text-muted-foreground text-xs">No Preview</span>
-          )}
+          <div className="flex items-center gap-2">
+            {isPlaying && (
+              <div className="flex items-end gap-[2px] h-5">
+                <span className="inline-block w-[3px] rounded-full bg-primary animate-equalizer" />
+                <span className="inline-block w-[3px] rounded-full bg-primary animate-equalizer-delay" />
+                <span className="inline-block w-[3px] rounded-full bg-primary animate-equalizer-delay-2" />
+              </div>
+            )}
+            {track.previewUrl ? (
+              <Button
+                variant={isPlaying ? "default" : "outline"}
+                size="icon"
+                onClick={togglePlayback}
+                aria-label={isPlaying ? "Pause preview" : "Play preview"}
+              >
+                {isPlaying ? (
+                  <Pause className="h-4 w-4" />
+                ) : (
+                  <Play className="h-4 w-4" />
+                )}
+              </Button>
+            ) : (
+              <span className="text-muted-foreground text-xs">No Preview</span>
+            )}
+          </div>
         </div>
 
         {/* Progress bar — only shown when audio has been interacted with */}
@@ -124,7 +135,7 @@ export function TrackPreview({ track }: { track: TrackMetadata }) {
           <div className="space-y-1">
             <div className="bg-muted h-1 w-full overflow-hidden rounded-full">
               <div
-                className="bg-primary h-full rounded-full transition-all duration-200"
+                className="gradient-primary h-full rounded-full transition-all duration-200"
                 style={{ width: `${progress}%` }}
               />
             </div>

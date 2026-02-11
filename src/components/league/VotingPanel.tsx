@@ -51,6 +51,7 @@ export function VotingPanel({
 
   // UI state
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [isHoveringSubmit, setIsHoveringSubmit] = useState(false);
 
   // SinglePick state
   const [selectedUpvote, setSelectedUpvote] = useState<string | null>(null);
@@ -250,7 +251,7 @@ export function VotingPanel({
   return (
     <AudioPlayerProvider>
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Cast Your Votes</h2>
+        <h2 className="text-lg font-semibold font-[family-name:var(--font-heading)]">Cast Your Votes</h2>
 
         {settings.votingStyle === "single_pick" && (
           <SinglePickVoting
@@ -332,7 +333,9 @@ export function VotingPanel({
           <Button
             onClick={handleSubmit}
             disabled={!isSubmitValid() || castVotes.isPending}
-            className="shadow-lg sm:shadow-none"
+            className={`shadow-lg sm:shadow-none gradient-primary text-white hover:opacity-90 ${isHoveringSubmit ? "glow-primary" : ""}`}
+            onMouseEnter={() => setIsHoveringSubmit(true)}
+            onMouseLeave={() => setIsHoveringSubmit(false)}
           >
             {castVotes.isPending ? "Submitting..." : "Submit Votes"}
           </Button>

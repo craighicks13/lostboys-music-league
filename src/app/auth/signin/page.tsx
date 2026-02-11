@@ -5,7 +5,8 @@ import { SignInForm } from "@/components/auth/SignInForm";
 
 export const metadata: Metadata = {
   title: "Sign In",
-  description: "Sign in to Music League with Google, Spotify, Apple, or a magic link.",
+  description:
+    "Sign in to Music League with Google, Spotify, Apple, or a magic link.",
 };
 
 export default function SignInPage() {

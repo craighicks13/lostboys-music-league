@@ -97,7 +97,7 @@ export function ResultsView({ roundId, leagueId, userRole, currentUserId }: Resu
                 key={result.id}
                 className={
                   isWinner
-                    ? "border-yellow-400 bg-yellow-50/50 dark:border-yellow-600 dark:bg-yellow-950/20"
+                    ? "border-yellow-400 bg-yellow-50/50 dark:border-yellow-600 dark:bg-yellow-950/20 ring-2 ring-yellow-400/50 glow-primary shadow-lg shadow-yellow-500/20 dark:shadow-yellow-500/10"
                     : undefined
                 }
               >
@@ -108,11 +108,11 @@ export function ResultsView({ roundId, leagueId, userRole, currentUserId }: Resu
                     <div
                       className={`flex size-8 shrink-0 items-center justify-center rounded-full font-bold text-sm ${
                         isWinner
-                          ? "bg-yellow-400 text-yellow-900"
+                          ? "bg-gradient-to-br from-yellow-300 to-yellow-500 text-yellow-900"
                           : position === 2
-                          ? "bg-gray-300 text-gray-800 dark:bg-gray-600 dark:text-gray-100"
+                          ? "bg-gradient-to-br from-gray-200 to-gray-400 text-gray-800 dark:from-gray-500 dark:to-gray-700 dark:text-gray-100"
                           : position === 3
-                          ? "bg-amber-600 text-white"
+                          ? "bg-gradient-to-br from-amber-500 to-amber-700 text-white"
                           : "bg-muted text-muted-foreground"
                       }`}
                     >
@@ -136,7 +136,9 @@ export function ResultsView({ roundId, leagueId, userRole, currentUserId }: Resu
                     </span>
 
                     {isWinner && (
-                      <Trophy className="size-4 text-yellow-500" />
+                      <span className="inline-flex animate-pulse-glow rounded-full p-1">
+                        <Trophy className="size-4 text-yellow-500" />
+                      </span>
                     )}
 
                     {/* Score badges */}
