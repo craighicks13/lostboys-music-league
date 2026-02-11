@@ -11,6 +11,7 @@ import { createTRPCReact } from '@trpc/react-query';
 import superjson from 'superjson';
 import type { AppRouter } from '../server/api/root';
 import { ThemeProvider } from '../components/ThemeProvider';
+import { Toaster } from '../components/ui/sonner';
 
 // Create tRPC client
 export const trpc = createTRPCReact<AppRouter>({});
@@ -44,6 +45,7 @@ export function Providers({
 					<ReactQueryDevtools initialIsOpen={false} />
 				</QueryClientProvider>
 			</trpc.Provider>
+			<Toaster richColors position="bottom-right" />
 		</ThemeProvider>
 	);
 }
