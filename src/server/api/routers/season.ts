@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq, and, desc, count, max, isNull } from "drizzle-orm";
+import { eq, and, desc, count, max, isNull, lte, ne } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { router, protectedProcedure } from "@/server/api/trpc";
 import { seasons } from "@/server/db/schema/rounds";
@@ -45,6 +45,64 @@ async function checkMembership(
 	return membership;
 }
 
+/**
+ * Reconcile season statuses based on dates.
+ * - If a season is "upcoming" and its startDate has passed, activate it
+ *   (and complete any other active season in the league).
+ * - If a season is "active" and its endDate has passed, complete it.
+ */
+async function reconcileSeasonStatuses(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	db: any,
+	leagueId: string
+) {
+	const now = new Date();
+
+	// First: complete any active seasons whose endDate has passed
+	await db
+		.update(seasons)
+		.set({ status: "completed" })
+		.where(
+			and(
+				eq(seasons.leagueId, leagueId),
+				eq(seasons.status, "active"),
+				lte(seasons.endDate, now)
+			)
+		);
+
+	// Second: find upcoming seasons whose startDate has passed
+	const readyToActivate = await db
+		.select({ id: seasons.id })
+		.from(seasons)
+		.where(
+			and(
+				eq(seasons.leagueId, leagueId),
+				eq(seasons.status, "upcoming"),
+				lte(seasons.startDate, now)
+			)
+		)
+		.orderBy(seasons.startDate);
+
+	// Activate them one at a time (completing any currently-active season first)
+	for (const season of readyToActivate) {
+		await db
+			.update(seasons)
+			.set({ status: "completed" })
+			.where(
+				and(
+					eq(seasons.leagueId, leagueId),
+					eq(seasons.status, "active"),
+					ne(seasons.id, season.id)
+				)
+			);
+
+		await db
+			.update(seasons)
+			.set({ status: "active" })
+			.where(eq(seasons.id, season.id));
+	}
+}
+
 export const seasonRouter = router({
 	create: protectedProcedure
 		.input(createSeasonSchema)
@@ -88,6 +146,8 @@ export const seasonRouter = router({
 
 			await checkMembership(ctx.db, input.leagueId, userId);
 
+			await reconcileSeasonStatuses(ctx.db, input.leagueId);
+
 			const result = await ctx.db
 				.select({
 					id: seasons.id,
@@ -114,6 +174,24 @@ export const seasonRouter = router({
 		.query(async ({ ctx, input }) => {
 			const userId = ctx.session.user.id!;
 
+			const [seasonRaw] = await ctx.db
+				.select()
+				.from(seasons)
+				.where(eq(seasons.id, input.id))
+				.limit(1);
+
+			if (!seasonRaw) {
+				throw new TRPCError({
+					code: "NOT_FOUND",
+					message: "Season not found",
+				});
+			}
+
+			await checkMembership(ctx.db, seasonRaw.leagueId, userId);
+
+			await reconcileSeasonStatuses(ctx.db, seasonRaw.leagueId);
+
+			// Re-fetch after reconciliation to get updated status
 			const [season] = await ctx.db
 				.select()
 				.from(seasons)
@@ -126,8 +204,6 @@ export const seasonRouter = router({
 					message: "Season not found",
 				});
 			}
-
-			await checkMembership(ctx.db, season.leagueId, userId);
 
 			const [roundCountResult] = await ctx.db
 				.select({ roundCount: count(rounds.id) })
@@ -301,6 +377,8 @@ export const seasonRouter = router({
 			const userId = ctx.session.user.id!;
 
 			await checkMembership(ctx.db, input.leagueId, userId);
+
+			await reconcileSeasonStatuses(ctx.db, input.leagueId);
 
 			const [activeSeason] = await ctx.db
 				.select()
